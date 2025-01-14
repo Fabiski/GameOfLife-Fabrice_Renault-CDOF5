@@ -20,3 +20,7 @@ This project is licensed under the MIT License - see the [LICENSE] file for deta
 
 * Fabrice RENAULT - Initial work
 See also the list of [contributors] who participated in the project.
+
+## Contributors
+
+* Louis RICHARD - Fixing bug concerning adaptative grid size and contributed to the Documentation
