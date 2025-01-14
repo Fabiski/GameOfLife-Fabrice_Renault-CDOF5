@@ -1,4 +1,5 @@
 import tkinter as tk
+import random
 
 class GameOfLife:
     def __init__(self, root, rows=20, cols=40, cell_size=20):
@@ -25,6 +26,8 @@ class GameOfLife:
         btn_frame.pack()
         tk.Button(btn_frame, text="Start", command=self.start).pack(side=tk.LEFT)
         tk.Button(btn_frame, text="Stop", command=self.stop).pack(side=tk.LEFT)
+        tk.Button(btn_frame, text="Clear", command=self.clear).pack(side=tk.LEFT)
+        tk.Button(btn_frame, text="Random", command=self.randomize).pack(side=tk.LEFT)
 
         # Draw initial grid
         self.draw_grid()
@@ -89,6 +92,17 @@ class GameOfLife:
                     if neighbors == 3:
                         new_grid[r][c] = 1  # Cell becomes alive
         self.grid = new_grid
+        self.update_display()
+
+    def clear(self):
+        """Clear the grid."""
+        self.running = False
+        self.grid = [[0 for _ in range(self.cols)] for _ in range(self.rows)]
+        self.update_display()
+        
+    def randomize(self):
+        """Randomize the grid."""
+        self.grid = [[random.randint(0, 1) for _ in range(self.cols)] for _ in range(self.rows)]
         self.update_display()
 
     def update_display(self):
