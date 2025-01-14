@@ -2,44 +2,57 @@ import tkinter as tk
 import random
 
 class GameOfLife:
-    def __init__(self, root, rows=20, cols=40, cell_size=20):
+    def __init__(self, root, cell_size=20):
         self.root = root
-        self.rows = rows
-        self.cols = cols
         self.cell_size = cell_size
         self.running = False
+        self.speed = 100
 
         # Create canvas
         self.canvas = tk.Canvas(root, bg="white")
         self.canvas.pack(fill=tk.BOTH, expand=True)
 
-        # Create grid
-        self.grid = [[0 for _ in range(cols)] for _ in range(rows)]
-        self.rects = [[None for _ in range(cols)] for _ in range(rows)]
-
         # Bind events
         self.canvas.bind("<Button-1>", self.toggle_cell)
+        self.canvas.bind("<B1-Motion>", self.paint_cell)
         self.root.bind("<Configure>", self.resize_grid)
 
         # Create buttons
         btn_frame = tk.Frame(root)
         btn_frame.pack()
+        tk.Button(btn_frame, text="<", command=self.slow).pack(side=tk.LEFT)
         tk.Button(btn_frame, text="Start", command=self.start).pack(side=tk.LEFT)
         tk.Button(btn_frame, text="Stop", command=self.stop).pack(side=tk.LEFT)
         tk.Button(btn_frame, text="Clear", command=self.clear).pack(side=tk.LEFT)
         tk.Button(btn_frame, text="Random", command=self.randomize).pack(side=tk.LEFT)
+        tk.Button(btn_frame, text=">", command=self.accelerate).pack(side=tk.LEFT)
+
+        # Initialize grid
+        self.rows = 0
+        self.cols = 0
+        self.grid = []
+        self.rects = []
 
         # Draw initial grid
+        self.resize_grid(None)
+
+    def resize_grid(self, event):
+        """Handle resizing of the canvas."""
+        width = self.canvas.winfo_width()
+        height = self.canvas.winfo_height()
+
+        # Calculate rows and columns
+        self.rows = height // self.cell_size
+        self.cols = width // self.cell_size
+
+        # Initialize grid
+        self.grid = [[0 for _ in range(self.cols)] for _ in range(self.rows)]
+        self.rects = [[None for _ in range(self.cols)] for _ in range(self.rows)]
         self.draw_grid()
 
     def draw_grid(self):
-        """Draw the grid based on current canvas size."""
-        self.canvas.delete("all")  # Clear the canvas
-        self.rects = [[None for _ in range(self.cols)] for _ in range(self.rows)]
-        width = self.canvas.winfo_width()
-        height = self.canvas.winfo_height()
-        self.cell_size = min(width // self.cols, height // self.rows)
-
+        """Draw the grid on the canvas."""
+        self.canvas.delete("all")
         for r in range(self.rows):
             for c in range(self.cols):
                 x1, y1 = c * self.cell_size, r * self.cell_size
@@ -47,17 +60,22 @@ class GameOfLife:
                 color = "black" if self.grid[r][c] else "white"
                 self.rects[r][c] = self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline="gray")
 
-    def resize_grid(self, event):
-        """Handle resizing of the canvas."""
-        if event.widget == self.canvas:
-            self.draw_grid()
-
     def toggle_cell(self, event):
         """Toggle cell state on mouse click."""
         col = event.x // self.cell_size
         row = event.y // self.cell_size
+        self.change_cell_state(row, col)
+
+    def paint_cell(self, event):
+        """Change multiple cells state while dragging."""
+        col = event.x // self.cell_size
+        row = event.y // self.cell_size
+        self.change_cell_state(row, col)
+
+    def change_cell_state(self, row, col):
+        """Change the state of a cell if valid."""
         if 0 <= row < self.rows and 0 <= col < self.cols:
-            self.grid[row][col] = 1 - self.grid[row][col]
+            self.grid[row][col] = 1
             self.update_cell(row, col)
 
     def update_cell(self, row, col):
@@ -104,6 +122,14 @@ class GameOfLife:
         """Randomize the grid."""
         self.grid = [[random.randint(0, 1) for _ in range(self.cols)] for _ in range(self.rows)]
         self.update_display()
+        
+    def accelerate(self):
+        """Randomize the grid."""
+        self.speed = int(self.speed * 0.9)
+    
+    def slow(self):
+        """Randomize the grid."""
+        self.speed = int(self.speed * 1.1)
 
     def update_display(self):
         """Update the display based on the grid state."""
@@ -124,7 +150,7 @@ class GameOfLife:
         """Game loop."""
         if self.running:
             self.next_generation()
-            self.canvas.after(100, self.run)
+            self.canvas.after(self.speed, self.run)
 
 
 if __name__ == "__main__":
@@ -132,4 +158,3 @@ if __name__ == "__main__":
     root.title("Conway's Game of Life")
     game = GameOfLife(root)
     root.mainloop()
-
