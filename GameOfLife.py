@@ -2,32 +2,52 @@ import tkinter as tk
 
 class GameOfLife:
     def __init__(self, root, rows=20, cols=40, cell_size=20):
+        self.root = root
         self.rows = rows
         self.cols = cols
         self.cell_size = cell_size
         self.running = False
 
         # Create canvas
-        self.canvas = tk.Canvas(root, width=cols * cell_size, height=rows * cell_size, bg="white")
-        self.canvas.pack()
+        self.canvas = tk.Canvas(root, bg="white")
+        self.canvas.pack(fill=tk.BOTH, expand=True)
 
         # Create grid
         self.grid = [[0 for _ in range(cols)] for _ in range(rows)]
         self.rects = [[None for _ in range(cols)] for _ in range(rows)]
-        for r in range(rows):
-            for c in range(cols):
-                x1, y1 = c * cell_size, r * cell_size
-                x2, y2 = x1 + cell_size, y1 + cell_size
-                self.rects[r][c] = self.canvas.create_rectangle(x1, y1, x2, y2, fill="white", outline="gray")
 
-        # Bind mouse click for toggling cells
+        # Bind events
         self.canvas.bind("<Button-1>", self.toggle_cell)
+        self.root.bind("<Configure>", self.resize_grid)
 
         # Create buttons
         btn_frame = tk.Frame(root)
         btn_frame.pack()
         tk.Button(btn_frame, text="Start", command=self.start).pack(side=tk.LEFT)
         tk.Button(btn_frame, text="Stop", command=self.stop).pack(side=tk.LEFT)
+
+        # Draw initial grid
+        self.draw_grid()
+
+    def draw_grid(self):
+        """Draw the grid based on current canvas size."""
+        self.canvas.delete("all")  # Clear the canvas
+        self.rects = [[None for _ in range(self.cols)] for _ in range(self.rows)]
+        width = self.canvas.winfo_width()
+        height = self.canvas.winfo_height()
+        self.cell_size = min(width // self.cols, height // self.rows)
+
+        for r in range(self.rows):
+            for c in range(self.cols):
+                x1, y1 = c * self.cell_size, r * self.cell_size
+                x2, y2 = x1 + self.cell_size, y1 + self.cell_size
+                color = "black" if self.grid[r][c] else "white"
+                self.rects[r][c] = self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline="gray")
+
+    def resize_grid(self, event):
+        """Handle resizing of the canvas."""
+        if event.widget == self.canvas:
+            self.draw_grid()
 
     def toggle_cell(self, event):
         """Toggle cell state on mouse click."""
@@ -90,7 +110,7 @@ class GameOfLife:
         """Game loop."""
         if self.running:
             self.next_generation()
-            self.canvas.after(100, self.run)    
+            self.canvas.after(100, self.run)
 
 
 if __name__ == "__main__":
@@ -98,3 +118,4 @@ if __name__ == "__main__":
     root.title("Conway's Game of Life")
     game = GameOfLife(root)
     root.mainloop()
+
