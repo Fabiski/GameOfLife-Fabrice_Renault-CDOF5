@@ -11,7 +11,7 @@ Since it's a python project, you can :
 2. Launch the game with a python interpreter
 
 ## A guide on how to contribute
-Please read [CONTRIBUTING.md]() for details on our code of conduct, and the process for submitting pull requests to us.
+Please read [CONTRIBUTING.md] for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE] file for details
