@@ -6,7 +6,7 @@ Here is an implementation in python of the famous Game of life created by John H
 
 ## How to run the project
 Since it's a python project, you can :
---------
+
 1. Install the requirements packages with pip install -r requirements.txt
 2. Launch the game with a python interpreter
 
@@ -17,6 +17,6 @@ Please read [CONTRIBUTING.md](https://github.com/Fabiski/GameOfLife-Fabrice_Rena
 This project is licensed under the MIT License - see the [LICENSE] file for details
 
 ## Author
----------
+
 * Fabrice RENAULT - Initial work
 See also the list of [contributors] who participated in the project.
